@@ -1,69 +1,64 @@
 # 🎯 GuruShots Auto Vote
 
-**Modern desktop application for automated GuruShots voting with CLI bonus**
+**Automated GuruShots voting — desktop GUI, CLI, and Android, one shared engine.**
 
-[![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Linux%20%7C%20Windows-blue)](https://github.com/isthisgitlab/gurushots-auto-vote/releases)
+[![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Linux%20%7C%20Windows%20%7C%20Android-blue)](https://github.com/isthisgitlab/gurushots-auto-vote/releases)
 
-## ✨ Key Features
+> ⚠️ **Run only ONE instance at a time** — one GUI *or* one CLI *or* one phone. Multiple instances hammer the GuruShots API in parallel and can trigger rate-limits or account restrictions.
 
-### 🖥️ **Modern Desktop GUI**
-- **Beautiful UI**: Electron app with TailwindCSS and DaisyUI components
-- **Real-time monitoring**: Live challenge updates and voting progress
-- **Interactive settings**: Visual configuration for all voting parameters
-- **Challenge management**: Per-challenge customization with overrides
-- **Theme support**: Light/dark mode with customizable appearance
+## ✨ Features
 
-### 🔄 **Smart Voting System**
-- **Per-challenge settings**: Customize exposure thresholds, boost times, and voting strategies
-- **Intelligent timing**: Vote only in last minutes or apply boosts strategically
-- **Continuous operation**: Automated voting with background scheduling
-- **Real-time monitoring**: Live status updates and voting progress
+- **Automated voting** — votes your active challenges up to a configurable exposure target.
+- **Last-minute push** — drives exposure to 100% inside a set window before a challenge closes, and polls more tightly as the deadline nears (with an optional lower ceiling for the final hour).
+- **Boost & Turbo** — auto-applies boost near the deadline, and auto-plays the turbo mini-game to *earn* turbo, then *applies* it to a chosen entry before time runs out.
+- **Auto-fill** — submits photos into empty entry slots near the deadline, staggered to avoid vote dilution, with tag and theme filters.
+- **Per-challenge overrides** — every voting setting has a global default that any single challenge can override; tag rules key on the challenge *title* so they survive GuruShots' rotating challenge IDs.
+- **Resilient** — configurable timeouts with automatic retry/backoff on transient API failures.
+- **Quality of life** — light/dark themes, English/Latvian UI, timezone display, a mock mode for safe testing, and built-in update notifications.
 
-### 🛡️ **Development & Testing**
-- **Mock mode**: Simulate API calls for safe testing and development
-- **Real mode**: Production-ready with actual GuruShots API integration
-- **Easy switching**: Toggle between modes via GUI settings or CLI login
+## 🚀 Usage
 
-### ⚙️ **Advanced Configuration**
-- **Global defaults**: Set default values for all challenges
-- **Challenge overrides**: Per-challenge customizations
-- **Timezone support**: Handle different time zones for challenge deadlines
-- **Multi-language**: Internationalization support
+**Most users:** grab a [release build](https://github.com/isthisgitlab/gurushots-auto-vote/releases) — the desktop GUI (macOS/Linux/Windows) or the Android APK — and run it.
 
-## 🚀 Usage Examples
+**Command line** (`gurucli`, macOS & Linux):
 
 ```bash
-# GUI - Launch desktop application (main interface)
-npm start
+./gurucli-<version>-<platform> login    # authenticate once (saves a token)
+./gurucli-<version>-<platform> run      # one full auto-strategy cycle
+./gurucli-<version>-<platform> start    # continuous voting (Ctrl+C to stop)
+```
 
-# CLI - Bonus command-line interface
-npm run cli:status    # Check status and mode
-npm run cli:login     # Interactive login with mode selection
-npm run cli:start     # Start continuous voting
+**From source** (pnpm 11+; `npm` is not supported):
+
+```bash
+pnpm install
+pnpm start            # launch the desktop GUI
 ```
 
 ## 🏗️ Architecture
 
-- **Electron App**: Modern desktop application with web technologies
-- **Strategy Pattern**: Clean separation between real and mock APIs
-- **Middleware Layer**: Unified interface for both GUI and CLI
-- **Settings Management**: Centralized configuration with schema validation
-- **Test Coverage**: Comprehensive test suite with 97.8% coverage
+- **One shared engine** — all voting logic lives in `src/js/` and is reused across every platform; only the shell (entry point, transport, storage) differs.
+- **Real / mock swap** — `apiFactory` selects the live GuruShots API or a mock at runtime based on the `mock` setting, so you can test safely.
+- **Shared renderer** — a single Preact UI runs under both Electron (desktop) and Capacitor (Android).
+- **Settings facade** — centralized configuration with a zod-validated schema and platform-specific storage.
 
 ## 📦 Platforms
 
-- **macOS**: Native desktop app (.dmg) + CLI binary
-- **Linux**: AppImage + CLI binary (x64 & ARM64)
-- **Windows**: Portable executable (.exe) + CLI binary
+| Platform    | GUI                        | CLI (`gurucli`)              |
+|-------------|----------------------------|------------------------------|
+| **macOS**   | `.dmg`                     | ✅ terminal binary            |
+| **Linux**   | AppImage                   | ✅ x64 & ARM64                |
+| **Windows** | Portable `.exe`            | — (use the GUI)              |
+| **Android** | Sideloaded APK (votes in the background) | —              |
 
 ## 🔧 Tech Stack
 
-- **Frontend**: Electron, TailwindCSS, DaisyUI
-- **Backend**: Node.js, Express-style API layer
-- **CLI Bonus**: Command-line interface with interactive features
-- **Testing**: Jest with comprehensive coverage
-- **Build**: Electron Builder, pkg for CLI binaries
+- **Frontend**: Electron, Capacitor (Android), Preact + `@preact/signals`, TailwindCSS, DaisyUI
+- **Core**: Node.js shared engine in `src/js/`, zod-validated settings
+- **CLI**: `gurucli`, packaged as a Node Single Executable Application (SEA) via `postject`
+- **Testing**: comprehensive Jest test suite
+- **Build**: electron-builder (GUI) + Node SEA (CLI)
 
 ---
 
-**[📥 Download Latest Release](https://github.com/isthisgitlab/gurushots-auto-vote/releases)** | **[📚 Full Documentation](https://github.com/isthisgitlab/gurushots-auto-vote)** 
+**[📥 Download Latest Release](https://github.com/isthisgitlab/gurushots-auto-vote/releases)** | **[📚 Full Documentation](https://github.com/isthisgitlab/gurushots-auto-vote)**
